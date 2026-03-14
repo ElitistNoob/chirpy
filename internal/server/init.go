@@ -53,6 +53,7 @@ func initServer() error {
 	// chirps endpoints
 	mux.HandleFunc("POST /api/chirps", chirps.CreateHandler(appState))
 	mux.HandleFunc("GET /api/chirps", chirps.GetAllHandler(appState))
+	mux.HandleFunc("GET /api/chirps/{chirpID}", chirps.GetHandler(appState))
 
 	// admin endpoints
 	mux.HandleFunc("GET /admin/metrics", h.MetricsHandler(appState))

@@ -9,15 +9,15 @@ import (
 
 func GetAllHandler(appState *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		chirps, err := appState.Queries.GetAllChirps(r.Context())
+		dbChirps, err := appState.Queries.GetAllChirps(r.Context())
 		if err != nil {
-			internal.RespondWithError(w, http.StatusBadRequest, "Error returning all chirps", err)
+			internal.RespondWithError(w, http.StatusInternalServerError, "Couldn't retrieve chirps", err)
 			return
 		}
 
-		var chirpsList []chirpModel
-		for _, c := range chirps {
-			chirpsList = append(chirpsList, chirpModel{
+		var chirps []chirp
+		for _, c := range dbChirps {
+			chirps = append(chirps, chirp{
 				ID:        c.ID,
 				CreatedAt: c.CreatedAt,
 				UpdateAt:  c.UpdatedAt,
@@ -26,6 +26,6 @@ func GetAllHandler(appState *app.App) http.HandlerFunc {
 			})
 		}
 
-		internal.RespondWithJSON(w, http.StatusOK, chirpsList)
+		internal.RespondWithJSON(w, http.StatusOK, chirps)
 	}
 }

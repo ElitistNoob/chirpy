@@ -41,7 +41,7 @@ func CreateHandler(appState *app.App) http.HandlerFunc {
 			return
 		}
 
-		internal.RespondWithJSON(w, http.StatusCreated, chirpModel{
+		internal.RespondWithJSON(w, http.StatusCreated, chirp{
 			ID:        c.ID,
 			CreatedAt: c.CreatedAt,
 			UpdateAt:  c.UpdatedAt,

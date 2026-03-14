@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type chirpModel struct {
+type chirp struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdateAt  time.Time `json:"updated_at"`
