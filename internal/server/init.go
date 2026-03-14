@@ -10,6 +10,7 @@ import (
 	"github.com/ElitistNoob/chirpy/internal/app"
 	"github.com/ElitistNoob/chirpy/internal/database"
 	h "github.com/ElitistNoob/chirpy/internal/handlers"
+	"github.com/ElitistNoob/chirpy/internal/handlers/chirps"
 )
 
 //go:embed index.html assets/*
@@ -43,14 +44,17 @@ func initServer() error {
 	handler := http.StripPrefix("/app/", fileServer)
 	mux.Handle("/app/", h.MiddlewareMetricsInc(appState)(handler))
 
-	// api
+	// healtz endpoints
 	mux.HandleFunc("GET /api/healthz", h.HealthHandler)
+
+	// users endpoints
 	mux.HandleFunc("POST /api/users", h.UserCreateHandler(appState))
 
-	mux.HandleFunc("GET /api/chirps", h.ChirpsGetAllHandler(appState))
-	mux.HandleFunc("POST /api/chirps", h.ChirpsCreateHandler(appState))
+	// chirps endpoints
+	mux.HandleFunc("POST /api/chirps", chirps.CreateHandler(appState))
+	mux.HandleFunc("GET /api/chirps", chirps.GetAllHandler(appState))
 
-	// admin
+	// admin endpoints
 	mux.HandleFunc("GET /admin/metrics", h.MetricsHandler(appState))
 	mux.HandleFunc("POST /admin/reset", h.ResetHandler(appState))
 

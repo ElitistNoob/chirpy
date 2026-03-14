@@ -1,11 +1,10 @@
-package handlers
+package chirps
 
 import (
 	"encoding/json"
 	"errors"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/ElitistNoob/chirpy/internal"
 	"github.com/ElitistNoob/chirpy/internal/app"
@@ -18,15 +17,7 @@ type parameters struct {
 	Body   string    `json:"body"`
 }
 
-type chirp struct {
-	ID       uuid.UUID `json:"id"`
-	CreateAt time.Time `json:"created_at"`
-	UpdateAt time.Time `json:"updated_at"`
-	Body     string    `json:"body"`
-	UserID   uuid.UUID `json:"user_id"`
-}
-
-func ChirpsCreateHandler(appState *app.App) http.HandlerFunc {
+func CreateHandler(appState *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params parameters
 		decoder := json.NewDecoder(r.Body)
@@ -50,12 +41,12 @@ func ChirpsCreateHandler(appState *app.App) http.HandlerFunc {
 			return
 		}
 
-		internal.RespondWithJSON(w, http.StatusCreated, chirp{
-			ID:       c.ID,
-			CreateAt: c.CreatedAt,
-			UpdateAt: c.UpdatedAt,
-			Body:     c.Body,
-			UserID:   c.UserID,
+		internal.RespondWithJSON(w, http.StatusCreated, chirpModel{
+			ID:        c.ID,
+			CreatedAt: c.CreatedAt,
+			UpdateAt:  c.UpdatedAt,
+			Body:      c.Body,
+			UserID:    c.UserID,
 		})
 	}
 }
