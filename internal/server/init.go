@@ -45,8 +45,10 @@ func initServer() error {
 
 	// api
 	mux.HandleFunc("GET /api/healthz", h.HealthHandler)
-	mux.HandleFunc("POST /api/users", h.CreateUserHandler(appState))
-	mux.HandleFunc("POST /api/chirps", h.ChirpsHandler(appState))
+	mux.HandleFunc("POST /api/users", h.UserCreateHandler(appState))
+
+	mux.HandleFunc("GET /api/chirps", h.ChirpsGetAllHandler(appState))
+	mux.HandleFunc("POST /api/chirps", h.ChirpsCreateHandler(appState))
 
 	// admin
 	mux.HandleFunc("GET /admin/metrics", h.MetricsHandler(appState))

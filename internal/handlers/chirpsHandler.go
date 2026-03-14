@@ -26,7 +26,7 @@ type chirp struct {
 	UserID   uuid.UUID `json:"user_id"`
 }
 
-func ChirpsHandler(appState *app.App) http.HandlerFunc {
+func ChirpsCreateHandler(appState *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params parameters
 		decoder := json.NewDecoder(r.Body)

@@ -21,7 +21,7 @@ type User struct {
 	Email     string    `json:"email"`
 }
 
-func CreateUserHandler(appState *app.App) http.HandlerFunc {
+func UserCreateHandler(appState *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req UserRequest
 		decoder := json.NewDecoder(r.Body)
