@@ -10,8 +10,5 @@ type App struct {
 	Queries        *database.Queries
 	FileserverHits atomic.Int32
 	Platform       string
-}
-
-func NewApp() *App {
-	return &App{}
+	Secret         string
 }

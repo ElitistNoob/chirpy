@@ -29,15 +29,22 @@ func initServer() error {
 		log.Fatal("PLATFORM missing from .env")
 	}
 
+	secret := os.Getenv("SECRET")
+	if secret == "" {
+		log.Fatal("SECRET missing from .env")
+	}
+
 	db, err := sql.Open("postgres", dbUrl)
 	if err != nil {
 		log.Fatalf("error loading .env file: %s", err)
 	}
 
 	dbQueries := database.New(db)
-	appState := app.NewApp()
-	appState.Queries = dbQueries
-	appState.Platform = platform
+	appState := &app.App{
+		Queries:  dbQueries,
+		Platform: platform,
+		Secret:   secret,
+	}
 
 	mux := http.NewServeMux()
 	fileServer := http.FileServerFS(serverFS)

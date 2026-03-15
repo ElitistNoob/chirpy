@@ -8,21 +8,32 @@ import (
 
 	"github.com/ElitistNoob/chirpy/internal"
 	"github.com/ElitistNoob/chirpy/internal/app"
+	"github.com/ElitistNoob/chirpy/internal/auth"
 	db "github.com/ElitistNoob/chirpy/internal/database"
-	"github.com/google/uuid"
 )
 
 type parameters struct {
-	UserID uuid.UUID `json:"user_id"`
-	Body   string    `json:"body"`
+	Body string `json:"body"`
 }
 
 func CreateHandler(appState *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		token, err := auth.GetBearerToken(r.Header)
+		if err != nil {
+			internal.RespondWithError(w, http.StatusUnauthorized, "Couldn't find JWT", err)
+			return
+		}
+
+		userID, err := auth.ValidateJWT(token, appState.Secret)
+		if err != nil {
+			internal.RespondWithError(w, http.StatusUnauthorized, "Couldn't validate JWT", err)
+			return
+		}
+
 		var params parameters
 		decoder := json.NewDecoder(r.Body)
 		if err := decoder.Decode(&params); err != nil {
-			internal.RespondWithError(w, http.StatusInternalServerError, "Error decoding body response", err)
+			internal.RespondWithError(w, http.StatusInternalServerError, "Error decoding parameters", err)
 			return
 		}
 
@@ -33,7 +44,7 @@ func CreateHandler(appState *app.App) http.HandlerFunc {
 		}
 
 		c, err := appState.Queries.CreateChirp(r.Context(), db.CreateChirpParams{
-			UserID: params.UserID,
+			UserID: userID,
 			Body:   cleaned,
 		})
 		if err != nil {

@@ -7,8 +7,9 @@ import (
 )
 
 type UserRequest struct {
-	Password string `json:"password"`
-	Email    string `json:"email"`
+	Password         string `json:"password"`
+	Email            string `json:"email"`
+	ExpiresInSeconds int    `json:"expires_in_seconds"`
 }
 
 type User struct {
@@ -17,4 +18,5 @@ type User struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 	Email        string    `json:"email"`
 	HashPassword string    `json:"hash_password"`
+	Token        string    `json:"token"`
 }
