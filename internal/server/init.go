@@ -11,6 +11,7 @@ import (
 	"github.com/ElitistNoob/chirpy/internal/database"
 	h "github.com/ElitistNoob/chirpy/internal/handlers"
 	"github.com/ElitistNoob/chirpy/internal/handlers/chirps"
+	"github.com/ElitistNoob/chirpy/internal/handlers/users"
 )
 
 //go:embed index.html assets/*
@@ -48,7 +49,8 @@ func initServer() error {
 	mux.HandleFunc("GET /api/healthz", h.HealthHandler)
 
 	// users endpoints
-	mux.HandleFunc("POST /api/users", h.UserCreateHandler(appState))
+	mux.HandleFunc("POST /api/users", users.CreateHandler(appState))
+	mux.HandleFunc("POST /api/login", users.LoginHandler(appState))
 
 	// chirps endpoints
 	mux.HandleFunc("POST /api/chirps", chirps.CreateHandler(appState))

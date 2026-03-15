@@ -1,27 +1,16 @@
-package handlers
+package users
 
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/ElitistNoob/chirpy/internal"
 	"github.com/ElitistNoob/chirpy/internal/app"
-	"github.com/google/uuid"
+	"github.com/ElitistNoob/chirpy/internal/auth"
+	"github.com/ElitistNoob/chirpy/internal/database"
 )
 
-type UserRequest struct {
-	Email string `json:"email"`
-}
-
-type User struct {
-	ID        uuid.UUID `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Email     string    `json:"email"`
-}
-
-func UserCreateHandler(appState *app.App) http.HandlerFunc {
+func CreateHandler(appState *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req UserRequest
 		decoder := json.NewDecoder(r.Body)
@@ -30,7 +19,16 @@ func UserCreateHandler(appState *app.App) http.HandlerFunc {
 			return
 		}
 
-		user, err := appState.Queries.CreateUser(r.Context(), req.Email)
+		hash, err := auth.HashPassword(req.Password)
+		if err != nil {
+			internal.RespondWithError(w, http.StatusInternalServerError, "Could not hash password", err)
+			return
+		}
+
+		user, err := appState.Queries.CreateUser(r.Context(), database.CreateUserParams{
+			HashedPassword: hash,
+			Email:          req.Email,
+		})
 		if err != nil {
 			internal.RespondWithError(w, http.StatusBadRequest, "bad request", err)
 			return
