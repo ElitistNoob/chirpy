@@ -8,10 +8,7 @@ import (
 	"github.com/ElitistNoob/chirpy/internal"
 	"github.com/ElitistNoob/chirpy/internal/app"
 	"github.com/ElitistNoob/chirpy/internal/auth"
-)
-
-const (
-	MAX_TOKEN_VALIDITY = 60 * 60
+	"github.com/ElitistNoob/chirpy/internal/database"
 )
 
 func LoginHandler(appState *app.App) http.HandlerFunc {
@@ -21,15 +18,6 @@ func LoginHandler(appState *app.App) http.HandlerFunc {
 		if err := decoder.Decode(&user); err != nil {
 			internal.RespondWithError(w, http.StatusInternalServerError, "Couldn't decode response body", err)
 			return
-		}
-
-		expiresIn := MAX_TOKEN_VALIDITY
-
-		value := r.Header.Get("ExpiresInSeconds")
-		if value != "" {
-			if user.ExpiresInSeconds > 0 && user.ExpiresInSeconds < MAX_TOKEN_VALIDITY {
-				expiresIn = user.ExpiresInSeconds
-			}
 		}
 
 		dbUser, err := appState.Queries.GetUserByEmail(r.Context(), user.Email)
@@ -44,19 +32,29 @@ func LoginHandler(appState *app.App) http.HandlerFunc {
 			return
 		}
 
-		token, err := auth.MakeJWT(dbUser.ID, appState.Secret, time.Second*time.Duration(expiresIn))
+		token, err := auth.MakeJWT(dbUser.ID, appState.Secret, time.Hour)
 		if err != nil {
 			internal.RespondWithError(w, http.StatusUnauthorized, "Couldn't create new token", err)
 			return
+		}
 
+		refreshToken, err := appState.Queries.CreateRefreshToken(r.Context(), database.CreateRefreshTokenParams{
+			Token:     auth.MakeRefreshToken(),
+			UserID:    dbUser.ID,
+			ExpiresAt: time.Now().Add(time.Hour * 24 * 60),
+		})
+		if err != nil {
+			internal.RespondWithError(w, http.StatusInternalServerError, "Couldn't create new refreshToken", err)
+			return
 		}
 
 		internal.RespondWithJSON(w, http.StatusOK, User{
-			ID:        dbUser.ID,
-			CreatedAt: dbUser.CreatedAt,
-			UpdatedAt: dbUser.UpdatedAt,
-			Email:     dbUser.Email,
-			Token:     token,
+			ID:           dbUser.ID,
+			CreatedAt:    dbUser.CreatedAt,
+			UpdatedAt:    dbUser.UpdatedAt,
+			Email:        dbUser.Email,
+			Token:        token,
+			RefreshToken: refreshToken.Token,
 		})
 	}
 }

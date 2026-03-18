@@ -58,6 +58,8 @@ func initServer() error {
 	// users endpoints
 	mux.HandleFunc("POST /api/users", users.CreateHandler(appState))
 	mux.HandleFunc("POST /api/login", users.LoginHandler(appState))
+	mux.HandleFunc("POST /api/refresh", users.RefreshHandler(appState))
+	mux.HandleFunc("POST /api/revoke", users.RevokeHandler(appState))
 
 	// chirps endpoints
 	mux.HandleFunc("POST /api/chirps", chirps.CreateHandler(appState))
