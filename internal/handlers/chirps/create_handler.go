@@ -12,12 +12,12 @@ import (
 	db "github.com/ElitistNoob/chirpy/internal/database"
 )
 
-type parameters struct {
-	Body string `json:"body"`
-}
-
 func CreateHandler(appState *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		type parameters struct {
+			Body string `json:"body"`
+		}
+
 		token, err := auth.GetBearerToken(r.Header)
 		if err != nil {
 			internal.RespondWithError(w, http.StatusUnauthorized, "Couldn't find JWT", err)

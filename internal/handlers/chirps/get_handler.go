@@ -18,7 +18,7 @@ func GetHandler(appState *app.App) http.HandlerFunc {
 
 		dbChirp, err := appState.Queries.GetChirpByID(r.Context(), chirpID)
 		if err != nil {
-			internal.RespondWithError(w, http.StatusInternalServerError, "Couldn't retrieve chirp", err)
+			internal.RespondWithError(w, http.StatusNotFound, "Couldn't retrieve chirp", err)
 			return
 		}
 
