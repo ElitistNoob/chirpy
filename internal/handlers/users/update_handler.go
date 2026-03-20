@@ -55,10 +55,11 @@ func UpdateHandler(appState *app.App) http.HandlerFunc {
 
 		resp := response{
 			User{
-				ID:        updatedUser.ID,
-				CreatedAt: updatedUser.CreatedAt,
-				UpdatedAt: updatedUser.UpdatedAt,
-				Email:     updatedUser.Email,
+				ID:          updatedUser.ID,
+				CreatedAt:   updatedUser.CreatedAt,
+				UpdatedAt:   updatedUser.UpdatedAt,
+				Email:       updatedUser.Email,
+				IsChirpyRed: updatedUser.IsChirpyRed,
 			},
 		}
 

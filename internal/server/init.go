@@ -12,6 +12,7 @@ import (
 	h "github.com/ElitistNoob/chirpy/internal/handlers"
 	"github.com/ElitistNoob/chirpy/internal/handlers/chirps"
 	"github.com/ElitistNoob/chirpy/internal/handlers/users"
+	"github.com/ElitistNoob/chirpy/internal/handlers/webhooks"
 )
 
 //go:embed index.html assets/*
@@ -34,6 +35,11 @@ func initServer() error {
 		log.Fatal("SECRET missing from .env")
 	}
 
+	polkaKey := os.Getenv("POLKA_KEY")
+	if secret == "" {
+		log.Fatal("POLKA_KEY missing from .env")
+	}
+
 	db, err := sql.Open("postgres", dbUrl)
 	if err != nil {
 		log.Fatalf("error loading .env file: %s", err)
@@ -44,6 +50,7 @@ func initServer() error {
 		Queries:  dbQueries,
 		Platform: platform,
 		Secret:   secret,
+		PolkaKey: polkaKey,
 	}
 
 	mux := http.NewServeMux()
@@ -73,6 +80,9 @@ func initServer() error {
 	// admin endpoints
 	mux.HandleFunc("GET /admin/metrics", h.MetricsHandler(appState))
 	mux.HandleFunc("POST /admin/reset", h.ResetHandler(appState))
+
+	// webhooks
+	mux.HandleFunc("POST /api/polka/webhooks", webhooks.WebhookHandler(appState))
 
 	s := &http.Server{
 		Addr:    ":" + port,

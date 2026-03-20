@@ -53,6 +53,7 @@ func LoginHandler(appState *app.App) http.HandlerFunc {
 			CreatedAt:    dbUser.CreatedAt,
 			UpdatedAt:    dbUser.UpdatedAt,
 			Email:        dbUser.Email,
+			IsChirpyRed:  dbUser.IsChirpyRed,
 			Token:        token,
 			RefreshToken: refreshToken.Token,
 		})

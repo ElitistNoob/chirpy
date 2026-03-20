@@ -11,4 +11,5 @@ type App struct {
 	FileserverHits atomic.Int32
 	Platform       string
 	Secret         string
+	PolkaKey       string
 }

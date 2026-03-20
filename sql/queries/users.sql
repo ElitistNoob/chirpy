@@ -7,7 +7,7 @@ RETURNING *;
 DELETE FROM users;
 
 -- name: GetUserByEmail :one
-SELECT id, created_at, updated_at, email, hashed_password FROM users
+SELECT id, created_at, updated_at, email, is_chirpy_red, hashed_password FROM users
 WHERE email = $1;
 
 -- name: UpdateUserEmailAndPassword :one
@@ -17,4 +17,12 @@ SET
   hashed_password = $2,
   updated_at = NOW()
 WHERE id = $3
-RETURNING id, created_at, updated_at, email;
+RETURNING id, created_at, updated_at, email, is_chirpy_red;
+
+-- name: UpdateChirpyRedStatus :one
+UPDATE users
+SET
+  is_chirpy_red = true,
+  updated_at = NOW()
+WHERE id = $1
+RETURNING id, created_at, updated_at, email, is_chirpy_red;
